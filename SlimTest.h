@@ -125,7 +125,7 @@ TestRunner& TestRunner::testRunner()
     if(!((lhs) == (rhs))) \
     { \
         std::cerr << "Assertion failed: " << #lhs << " == " << #rhs << "." << std::endl \
-            << "    Expected equal but were unequal (" << (lhs) << ", " << (rhs) << "." \
+            << "    Expected equal but were unequal (" << (lhs) << ", " << (rhs) << ")." \
             << std::endl << "    At: " << __FILE_NAME << " " << __LINE_NUMBER << std::endl; \
         TestRunner::testRunner().incrementFailedAssertions(); \
     } \
@@ -138,7 +138,7 @@ TestRunner& TestRunner::testRunner()
     if(!((lhs) != (rhs))) \
     { \
         std::cerr << "Assertion failed: " << #lhs << " != " << #rhs \
-            << ". Expected not equal but were equal (" << (lhs) << ", " << (rhs) << "." << std::endl; \
+            << ". Expected not equal but were equal (" << (lhs) << ", " << (rhs) << ")." << std::endl; \
         std::cerr << "    At: " << __FILE_NAME << " " << __LINE_NUMBER << std::endl; \
         TestRunner::testRunner().incrementFailedAssertions(); \
     } \
@@ -154,18 +154,7 @@ TestRunner& TestRunner::testRunner()
 #undef assertNull
 #endif
 #define assertNull(expression) \
-    assertEqual(expression, nullptr)
-
-#ifdef getFunctionName
-#undef getFunctionName
-#endif
-#if DX_DEFINED_WINDOWS
-#define getFunctionName() \
-    __FUNCTION__
-#elif DX_DEFINED_LINUX
-#define getFunctionName \
-    __PRETTY_FUNCTION__
-#endif
+    assertEqual(nullptr, expression)
 
 #ifdef __LINE_NUMBER
 #undef __LINE_NUMBER
@@ -206,7 +195,7 @@ TestRunner& TestRunner::testRunner()
 #undef registerTestFunctions
 #endif
 #define registerTestFunctions(...) \
-        static const TestRunner ___EXPANDED_LINE_NUMBER(__LINE__) ## _zzStaticTestRunner  = TestRunner({__VA_ARGS__});
+        static const TestRunner ___EXPANDED_LINE_NUMBER(__LINE__) ## _StaticTestRunner  = TestRunner({__VA_ARGS__});
 
 #ifdef RUN_TESTS_MAIN
 #undef RUN_TESTS_MAIN
