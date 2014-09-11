@@ -4,7 +4,6 @@
 #include <functional>
 #include <iostream>
 #include <vector>
-#include <atomic>
 #include <initializer_list>
 
 class TestRunner
