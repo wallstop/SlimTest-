@@ -200,7 +200,7 @@ TestRunner& TestRunner::testRunner()
 #ifdef RUN_TESTS_MAIN
 #undef RUN_TESTS_MAIN
 #endif
-#define RUN_TESTS_MAIN(testApp) \
+#define RUN_TESTS_MAIN \
     int main(int argc, char* argv[]) \
     { \
         const int ret = TestRunner::runTests(); \
