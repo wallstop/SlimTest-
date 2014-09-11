@@ -172,7 +172,7 @@ TestRunner& TestRunner::testRunner()
 #undef DEFINE_TEST_FUNCTION
 #endif
 #define DEFINE_TEST_FUNCTION(...) \
-    registerTestFunctions( \
+    REGISTER_TEST_FUNCTIONS( \
         []() \
         { \
             __VA_ARGS__ \
@@ -191,10 +191,10 @@ TestRunner& TestRunner::testRunner()
 #define ___EXPANDED_LINE_NUMBER(x) \
     __EXPANDED_LINE_NUMBER(x)
 
-#ifdef registerTestFunctions
-#undef registerTestFunctions
+#ifdef REGISTER_TEST_FUNCTIONS
+#undef REGISTER_TEST_FUNCTIONS
 #endif
-#define registerTestFunctions(...) \
+#define REGISTER_TEST_FUNCTIONS(...) \
         static const TestRunner ___EXPANDED_LINE_NUMBER(__LINE__) ## _StaticTestRunner  = TestRunner({__VA_ARGS__});
 
 #ifdef RUN_TESTS_MAIN
