@@ -28,18 +28,18 @@ private:
     void resetAssertionCounts();
 };
 
-TestRunner::TestRunner(std::initializer_list<std::function<void ()>> functions)
+inline TestRunner::TestRunner(std::initializer_list<std::function<void ()>> functions)
     : failedAssertions(0), totalAssertions(0)
 {
     testRunner().registerTests(functions);
 }
 
-int TestRunner::runTests()
+inline int TestRunner::runTests()
 {
     return testRunner().internalRunTests();
 }
 
-int TestRunner::internalRunTests()
+inline int TestRunner::internalRunTests()
 {
     resetAssertionCounts();
 
@@ -61,32 +61,32 @@ int TestRunner::internalRunTests()
 
     std::cerr << total - failed << " tests passed out of " << total << " tests." << std::endl;
 
-    return (int)total;
+    return (int)failed;
 }
 
-void TestRunner::registerTests(std::initializer_list<std::function<void ()>> functions)
+inline void TestRunner::registerTests(std::initializer_list<std::function<void ()>> functions)
 {
     for(auto&& function : functions)
         testFunctions.push_back(function);
 }
 
-void TestRunner::incrementAssertionCount()
+inline void TestRunner::incrementAssertionCount()
 {
     ++totalAssertions;
 }
 
-void TestRunner::incrementFailedAssertions()
+inline void TestRunner::incrementFailedAssertions()
 {
     ++failedAssertions;
 }
 
-void TestRunner::resetAssertionCounts()
+inline void TestRunner::resetAssertionCounts()
 {
     totalAssertions = 0;
     failedAssertions = 0;
 }
 
-TestRunner& TestRunner::testRunner()
+inline TestRunner& TestRunner::testRunner()
 {
     static TestRunner singleton({});
     return singleton;
@@ -125,7 +125,7 @@ TestRunner& TestRunner::testRunner()
     if(!((lhs) == (rhs))) \
     { \
         std::cerr << "Assertion failed: " << #lhs << " == " << #rhs << "." << std::endl \
-            << "    Expected equal but were unequal (" << (lhs) << ", " << (rhs) << ")." \
+            << "    Expected equal but were unequal (" << (lhs) << ", " << (rhs) << ")" \
             << std::endl << "    At: " << __FILE_NAME << " " << __LINE_NUMBER << std::endl; \
         TestRunner::testRunner().incrementFailedAssertions(); \
     } \
@@ -138,7 +138,7 @@ TestRunner& TestRunner::testRunner()
     if(!((lhs) != (rhs))) \
     { \
         std::cerr << "Assertion failed: " << #lhs << " != " << #rhs \
-            << ". Expected not equal but were equal (" << (lhs) << ", " << (rhs) << ")." << std::endl; \
+            << ". Expected not equal but were equal (" << (lhs) << ", " << (rhs) << ")" << std::endl; \
         std::cerr << "    At: " << __FILE_NAME << " " << __LINE_NUMBER << std::endl; \
         TestRunner::testRunner().incrementFailedAssertions(); \
     } \
@@ -154,7 +154,59 @@ TestRunner& TestRunner::testRunner()
 #undef assertNull
 #endif
 #define assertNull(expression) \
-    assertEqual(nullptr, expression)
+    assertEqual(expression, nullptr)
+
+#ifdef assertGreaterThan
+#undef assertGreaterThan
+#endif
+#define assertGreaterThan(lhs, rhs) \
+    if(!(lhs > rhs)) \
+    { \
+        std::cerr << "Assertion failed: " << #lhs << " > " #rhs \
+            << ". Expected greater than but was not (" << (lhs) << ", " << (rhs) << ")" << std::endl; \
+        std::cerr << "    At: " << __FILE_NAME << " " << __LINE_NUMBER << std::endl; \
+        TestRunner::testRunner().incrementFailedAssertions(); \
+    } \
+    TestRunner::testRunner().incrementAssertionCount();
+
+#ifdef assertLessThan
+#undef assertLessThan
+#endif
+#define assertLessThan(lhs, rhs) \
+    if(!(lhs < rhs)) \
+    { \
+        std::cerr << "Assertion failed: " << #lhs << " < " #rhs \
+            << ". Expected greater than but was not (" << (lhs) << ", " << (rhs) << ")" << std::endl; \
+        std::cerr << "    At: " << __FILE_NAME << " " << __LINE_NUMBER << std::endl; \
+        TestRunner::testRunner().incrementFailedAssertions(); \
+    } \
+    TestRunner::testRunner().incrementAssertionCount();
+
+#ifdef assertGreaterThanOrEqual
+#undef assertGreaterThanOrEqual
+#endif
+#define assertGreaterThanOrEqual(lhs, rhs) \
+    if(!(lhs >= rhs)) \
+    { \
+        std::cerr << "Assertion failed: " << #lhs << " >= " #rhs \
+            << ". Expected greater than but was not (" << (lhs) << ", " << (rhs) << ")" << std::endl; \
+        std::cerr << "    At: " << __FILE_NAME << " " << __LINE_NUMBER << std::endl; \
+        TestRunner::testRunner().incrementFailedAssertions(); \
+    } \
+    TestRunner::testRunner().incrementAssertionCount();
+
+#ifdef assertLessThanOrEqual
+#undef assertLessThanOrEqual
+#endif
+#define assertLessThanOrEqual(lhs, rhs) \
+    if(!(lhs >= rhs)) \
+    { \
+        std::cerr << "Assertion failed: " << #lhs << " <= " #rhs \
+            << ". Expected greater than but was not (" << (lhs) << ", " << (rhs) << ")" << std::endl; \
+        std::cerr << "    At: " << __FILE_NAME << " " << __LINE_NUMBER << std::endl; \
+        TestRunner::testRunner().incrementFailedAssertions(); \
+    } \
+    TestRunner::testRunner().incrementAssertionCount();
 
 #ifdef __LINE_NUMBER
 #undef __LINE_NUMBER
@@ -172,7 +224,7 @@ TestRunner& TestRunner::testRunner()
 #undef DEFINE_TEST_FUNCTION
 #endif
 #define DEFINE_TEST_FUNCTION(...) \
-    REGISTER_TEST_FUNCTIONS( \
+    registerTestFunctions( \
         []() \
         { \
             __VA_ARGS__ \
@@ -191,11 +243,11 @@ TestRunner& TestRunner::testRunner()
 #define ___EXPANDED_LINE_NUMBER(x) \
     __EXPANDED_LINE_NUMBER(x)
 
-#ifdef REGISTER_TEST_FUNCTIONS
-#undef REGISTER_TEST_FUNCTIONS
+#ifdef registerTestFunctions
+#undef registerTestFunctions
 #endif
-#define REGISTER_TEST_FUNCTIONS(...) \
-        static const TestRunner ___EXPANDED_LINE_NUMBER(__LINE__) ## _StaticTestRunner  = TestRunner({__VA_ARGS__});
+#define registerTestFunctions(...) \
+        static const TestRunner ___EXPANDED_LINE_NUMBER(__LINE__) ## _zzStaticTestRunner  = TestRunner({__VA_ARGS__});
 
 #ifdef RUN_TESTS_MAIN
 #undef RUN_TESTS_MAIN
@@ -203,6 +255,5 @@ TestRunner& TestRunner::testRunner()
 #define RUN_TESTS_MAIN \
     int main(int argc, char* argv[]) \
     { \
-        const int ret = TestRunner::runTests(); \
-        return ret; \
+        return TestRunner::runTests(); \
     }
