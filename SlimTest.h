@@ -12,14 +12,14 @@ public:
     TestRunner(std::initializer_list<std::function<void ()>> functions);
     ~TestRunner(){}
 
-    static int runTests();
+    static int runTests(const std::string& = "");
     void registerTests(std::initializer_list<std::function<void ()>> functions);
     void incrementAssertionCount();
     void incrementFailedAssertions();
     static TestRunner& testRunner();
 
 private:
-    int internalRunTests();
+    int internalRunTests(const std::string& name);
 
     std::vector<std::function<void ()>> testFunctions;
     size_t failedAssertions;
@@ -34,12 +34,12 @@ inline TestRunner::TestRunner(std::initializer_list<std::function<void ()>> func
     testRunner().registerTests(functions);
 }
 
-inline int TestRunner::runTests()
+inline int TestRunner::runTests(const std::string& name)
 {
-    return testRunner().internalRunTests();
+    return testRunner().internalRunTests(name);
 }
 
-inline int TestRunner::internalRunTests()
+inline int TestRunner::internalRunTests(const std::string& name)
 {
     resetAssertionCounts();
 
@@ -59,7 +59,8 @@ inline int TestRunner::internalRunTests()
         resetAssertionCounts();
     }
 
-    std::cerr << total - failed << " tests passed out of " << total << " tests." << std::endl;
+    std::cerr << total - failed << " tests passed out of " << total << " tests in " 
+        << name << "." << std::endl;
 
     return (int)failed;
 }
@@ -247,13 +248,14 @@ inline TestRunner& TestRunner::testRunner()
 #undef registerTestFunctions
 #endif
 #define registerTestFunctions(...) \
-        static const TestRunner ___EXPANDED_LINE_NUMBER(__LINE__) ## _zzStaticTestRunner  = TestRunner({__VA_ARGS__});
+        static const TestRunner ___EXPANDED_LINE_NUMBER(__LINE__) ## _zzStaticTestRunner \
+            = TestRunner({__VA_ARGS__});
 
 #ifdef RUN_TESTS_MAIN
 #undef RUN_TESTS_MAIN
 #endif
-#define RUN_TESTS_MAIN \
+#define RUN_TESTS_MAIN(name) \
     int main(int argc, char* argv[]) \
     { \
-        return TestRunner::runTests(); \
+        return TestRunner::runTests(name); \
     }
