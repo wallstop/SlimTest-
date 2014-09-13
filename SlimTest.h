@@ -1,3 +1,24 @@
+/*
+    Copyright (c) 2014 wallstop
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
+*/
 
 #pragma once
 
@@ -16,16 +37,16 @@ public:
     void registerTests(std::initializer_list<std::function<void ()>> functions);
     void incrementAssertionCount();
     void incrementFailedAssertions();
+    
     static TestRunner& testRunner();
 
 private:
     int internalRunTests(const std::string& name);
+    void resetAssertionCounts();
 
     std::vector<std::function<void ()>> testFunctions;
     size_t failedAssertions;
     size_t totalAssertions;
-
-    void resetAssertionCounts();
 };
 
 inline TestRunner::TestRunner(std::initializer_list<std::function<void ()>> functions)
@@ -149,13 +170,13 @@ inline TestRunner& TestRunner::testRunner()
 #undef assertNotNull
 #endif
 #define assertNotNull(expression) \
-    assertNotEqual(expression, nullptr)
+    assertNotEqual(nullptr, expression)
 
 #ifdef assertNull
 #undef assertNull
 #endif
 #define assertNull(expression) \
-    assertEqual(expression, nullptr)
+    assertEqual(nullptr, expression)
 
 #ifdef assertGreaterThan
 #undef assertGreaterThan
@@ -200,7 +221,7 @@ inline TestRunner& TestRunner::testRunner()
 #undef assertLessThanOrEqual
 #endif
 #define assertLessThanOrEqual(lhs, rhs) \
-    if(!(lhs >= rhs)) \
+    if(!(lhs <= rhs)) \
     { \
         std::cerr << "Assertion failed: " << #lhs << " <= " #rhs \
             << ". Expected greater than but was not (" << (lhs) << ", " << (rhs) << ")" << std::endl; \
@@ -225,7 +246,7 @@ inline TestRunner& TestRunner::testRunner()
 #undef DEFINE_TEST_FUNCTION
 #endif
 #define DEFINE_TEST_FUNCTION(...) \
-    registerTestFunctions( \
+    REGISTER_TEST_FUNCTIONS( \
         []() \
         { \
             __VA_ARGS__ \
@@ -244,10 +265,10 @@ inline TestRunner& TestRunner::testRunner()
 #define ___EXPANDED_LINE_NUMBER(x) \
     __EXPANDED_LINE_NUMBER(x)
 
-#ifdef registerTestFunctions
-#undef registerTestFunctions
+#ifdef REGISTER_TEST_FUNCTIONS
+#undef REGISTER_TEST_FUNCTIONS
 #endif
-#define registerTestFunctions(...) \
+#define REGISTER_TEST_FUNCTIONS(...) \
         static const TestRunner ___EXPANDED_LINE_NUMBER(__LINE__) ## _zzStaticTestRunner \
             = TestRunner({__VA_ARGS__});
 
