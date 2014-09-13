@@ -172,13 +172,13 @@ inline TestRunner& TestRunner::testRunner()
 #undef assertNotNull
 #endif
 #define assertNotNull(expression) \
-    assertNotEqual(nullptr, expression)
+    assertTrue(!(nullptr == expression))
 
 #ifdef assertNull
 #undef assertNull
 #endif
 #define assertNull(expression) \
-    assertEqual(nullptr, expression)
+    assertFalse(nullptr == expression)
 
 #ifdef assertGreaterThan
 #undef assertGreaterThan
