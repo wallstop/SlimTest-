@@ -73,6 +73,7 @@ On the test project properties, navigate to Configuration Properties -> Build Ev
 <h2>Assertion Macros</h2>
 SlimTest allows you to test the "truthiness" of a number of expressions. There are four unary assertions and a number of binary assertions. Unary assertions require no "extra work" from you, as a software developer. The binary assertions have some additional operator and function requirements.
 <h3>Unary Assertions</h3>
+--------------------------
 <h4>assertTrue</h4>
 ```C++
 assertTrue(expression)
@@ -94,6 +95,7 @@ assertNotNull(pointer)
 ```
 pointer should refer to a pointer to an object. If (nullptr == pointer), the test assertion fails.
 <h3>Binary Assertions</h3>
+--------------------------
 Binary assertions REQUIRE that the ostream operator above is implemented. These will not compile without it.
 <h4>assertEqual</h4>
 ```C++
