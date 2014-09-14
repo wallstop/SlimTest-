@@ -34,7 +34,7 @@ There are three core macros that lie at the base of SlimTest.
 DEFINE_TEST_FUNCTION(/* Function contents go here */)
 ```
 
-This macro allows you to declare a test function. This test function is automatically registered with the test harness.
+This macro allows you to declare and define the contents of a test function. This test function is automatically registered with the test harness. Simply put anything you would have inside of a normal functions within the parens of the macro.
 
 ```C++
 void myTestFunction()
@@ -124,7 +124,7 @@ Following the above format the following have been implemented:
 * assertLessThanOrEqual
 
 <h2>Lacking (but wanted) Features</h2>
-* Currently no moc'ing support
+* Currently no mocking support
 * No exception assertions
 * Line / branch coverage
 
