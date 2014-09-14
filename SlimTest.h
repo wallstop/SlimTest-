@@ -118,7 +118,7 @@ inline TestRunner& TestRunner::testRunner()
 }
 
 #ifdef assertTrue
-#undef assertTrue
+    #undef assertTrue
 #endif
 #define assertTrue(expression) \
     if(!(expression)) \
@@ -131,7 +131,7 @@ inline TestRunner& TestRunner::testRunner()
     TestRunner::testRunner().incrementAssertionCount();
 
 #ifdef assertFalse
-#undef assertFalse
+    #undef assertFalse
 #endif
 #define assertFalse(expression) \
     if(expression) \
@@ -144,7 +144,7 @@ inline TestRunner& TestRunner::testRunner()
     TestRunner::testRunner().incrementAssertionCount();
 
 #ifdef assertEqual
-#undef assertEqual
+    #undef assertEqual
 #endif
 #define assertEqual(lhs, rhs) \
     if(!((lhs) == (rhs))) \
@@ -157,7 +157,7 @@ inline TestRunner& TestRunner::testRunner()
     TestRunner::testRunner().incrementAssertionCount();
 
 #ifdef assertNotEqual
-#undef assertNotEqual
+    #undef assertNotEqual
 #endif
 #define assertNotEqual(lhs, rhs) \
     if(!((lhs) != (rhs))) \
@@ -170,19 +170,19 @@ inline TestRunner& TestRunner::testRunner()
     TestRunner::testRunner().incrementAssertionCount();
 
 #ifdef assertNotNull
-#undef assertNotNull
+    #undef assertNotNull
 #endif
 #define assertNotNull(expression) \
     assertFalse(nullptr == (expression))
 
 #ifdef assertNull
-#undef assertNull
+    #undef assertNull
 #endif
 #define assertNull(expression) \
     assertTrue(nullptr == (expression))
 
 #ifdef assertGreaterThan
-#undef assertGreaterThan
+    #undef assertGreaterThan
 #endif
 #define assertGreaterThan(lhs, rhs) \
     if(!((lhs) > (rhs))) \
@@ -195,7 +195,7 @@ inline TestRunner& TestRunner::testRunner()
     TestRunner::testRunner().incrementAssertionCount();
 
 #ifdef assertLessThan
-#undef assertLessThan
+    #undef assertLessThan
 #endif
 #define assertLessThan(lhs, rhs) \
     if(!((lhs) < (rhs))) \
@@ -208,33 +208,33 @@ inline TestRunner& TestRunner::testRunner()
     TestRunner::testRunner().incrementAssertionCount();
 
 #ifdef assertGreaterThanOrEqual
-#undef assertGreaterThanOrEqual
+    #undef assertGreaterThanOrEqual
 #endif
 #define assertGreaterThanOrEqual(lhs, rhs) \
     if(!((lhs) >= (rhs))) \
     { \
         std::cout << "Assertion failed: " << #lhs << " >= " #rhs \
-            << ". Expected greater than but was not (" << (lhs) << ", " << (rhs) << ")" << std::endl; \
+            << ". Expected greater or equal than but was not (" << (lhs) << ", " << (rhs) << ")" << std::endl; \
         std::cout << "    At: " << __FILE_NAME << " " << __LINE_NUMBER << std::endl; \
         TestRunner::testRunner().incrementFailedAssertions(); \
     } \
     TestRunner::testRunner().incrementAssertionCount();
 
 #ifdef assertLessThanOrEqual
-#undef assertLessThanOrEqual
+    #undef assertLessThanOrEqual
 #endif
 #define assertLessThanOrEqual(lhs, rhs) \
     if(!((lhs) <= (rhs))) \
     { \
         std::cout << "Assertion failed: " << #lhs << " <= " #rhs \
-            << ". Expected less than but was not (" << (lhs) << ", " << (rhs) << ")" << std::endl; \
+            << ". Expected less than or equal but was not (" << (lhs) << ", " << (rhs) << ")" << std::endl; \
         std::cout << "    At: " << __FILE_NAME << " " << __LINE_NUMBER << std::endl; \
         TestRunner::testRunner().incrementFailedAssertions(); \
     } \
     TestRunner::testRunner().incrementAssertionCount();
 
 #ifdef __LINE_NUMBER
-#undef __LINE_NUMBER
+    #undef __LINE_NUMBER
 #endif
 #define __LINE_NUMBER \
     __LINE__
@@ -246,7 +246,7 @@ inline TestRunner& TestRunner::testRunner()
     __FILE__
 
 #ifdef DEFINE_TEST_FUNCTION
-#undef DEFINE_TEST_FUNCTION
+    #undef DEFINE_TEST_FUNCTION
 #endif
 #define DEFINE_TEST_FUNCTION(...) \
     REGISTER_TEST_FUNCTIONS( \
@@ -257,26 +257,26 @@ inline TestRunner& TestRunner::testRunner()
     )
 
 #ifdef __EXPANDED_LINE_NUMBER
-#undef __EXPANDED_LINE_NUMBER
+    #undef __EXPANDED_LINE_NUMBER
 #endif
 #define __EXPANDED_LINE_NUMBER(x) \
     __zz_ ## x
 
 #ifdef ___EXPANDED_LINE_NUMBER
-#undef ___EXPANDED_LINE_NUMBER
+    #undef ___EXPANDED_LINE_NUMBER
 #endif
 #define ___EXPANDED_LINE_NUMBER(x) \
     __EXPANDED_LINE_NUMBER(x)
 
 #ifdef REGISTER_TEST_FUNCTIONS
-#undef REGISTER_TEST_FUNCTIONS
+    #undef REGISTER_TEST_FUNCTIONS
 #endif
 #define REGISTER_TEST_FUNCTIONS(...) \
         static const TestRunner ___EXPANDED_LINE_NUMBER(__LINE__) ## _zzStaticTestRunner \
             = TestRunner({__VA_ARGS__});
 
 #ifdef RUN_TESTS_MAIN
-#undef RUN_TESTS_MAIN
+    #undef RUN_TESTS_MAIN
 #endif
 #define RUN_TESTS_MAIN(name) \
     int main(int argc, char* argv[]) \
