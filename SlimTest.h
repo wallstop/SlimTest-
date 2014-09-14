@@ -36,26 +36,29 @@ public:
     TestRunner(std::initializer_list<std::function<void ()>> functions);
     ~TestRunner(){}
 
-    static int runTests(const std::string& = "");
-    void registerTests(std::initializer_list<std::function<void ()>> functions);
-    void incrementAssertionCount();
-    void incrementFailedAssertions();
-    
-    static TestRunner& testRunner();
+    static int runTests(const std::string& name = "");
+    static void registerTests(std::initializer_list<std::function<void ()>> functions);
+    static void incrementAssertionCount();
+    static void incrementFailedAssertions();
 
 private:
     int internalRunTests(const std::string& name);
-    void resetAssertionCounts();
+    void internalRegisterTests(std::initializer_list<std::function<void ()>> functions);
+    void internalIncrementAssertionCount();
+    void internalIncrementFailedAssertions();
+    static TestRunner& testRunner();
 
     std::vector<std::function<void ()>> testFunctions;
     size_t failedAssertions;
     size_t totalAssertions;
+
+    void resetAssertionCounts();
 };
 
 inline TestRunner::TestRunner(std::initializer_list<std::function<void ()>> functions)
     : failedAssertions(0), totalAssertions(0)
 {
-    testRunner().registerTests(functions);
+    registerTests(functions);
 }
 
 inline int TestRunner::runTests(const std::string& name)
@@ -91,16 +94,31 @@ inline int TestRunner::internalRunTests(const std::string& name)
 
 inline void TestRunner::registerTests(std::initializer_list<std::function<void ()>> functions)
 {
+    testRunner().internalRegisterTests(functions);
+}
+
+inline void TestRunner::internalRegisterTests(std::initializer_list<std::function<void ()>> functions)
+{
     for(auto&& function : functions)
         testFunctions.push_back(function);
 }
 
 inline void TestRunner::incrementAssertionCount()
 {
+    testRunner().internalIncrementAssertionCount();
+}
+
+inline void TestRunner::internalIncrementAssertionCount()
+{
     ++totalAssertions;
 }
 
 inline void TestRunner::incrementFailedAssertions()
+{
+    testRunner().internalIncrementFailedAssertions();
+}
+
+inline void TestRunner::internalIncrementFailedAssertions()
 {
     ++failedAssertions;
 }
@@ -126,9 +144,9 @@ inline TestRunner& TestRunner::testRunner()
         std::cout << "Assertion failed: " << #expression << "." << std::endl \
             << "    Expected true but was false (" << (expression) << ")" \
             << std::endl << "    At: " << __FILE_NAME << " " << __LINE_NUMBER << std::endl; \
-        TestRunner::testRunner().incrementFailedAssertions(); \
+        TestRunner::incrementFailedAssertions(); \
     } \
-    TestRunner::testRunner().incrementAssertionCount();
+    TestRunner::incrementAssertionCount();
 
 #ifdef assertFalse
     #undef assertFalse
@@ -139,9 +157,9 @@ inline TestRunner& TestRunner::testRunner()
         std::cout << "Assertion failed: " << #expression << "." << std::endl \
             << "    Expected false but was true (" << (expression) << ")" \
             << std::endl << "    At: " << __FILE_NAME << " " << __LINE_NUMBER << std::endl; \
-        TestRunner::testRunner().incrementFailedAssertions(); \
+        TestRunner::incrementFailedAssertions(); \
     } \
-    TestRunner::testRunner().incrementAssertionCount();
+    TestRunner::incrementAssertionCount();
 
 #ifdef assertEqual
     #undef assertEqual
@@ -152,9 +170,9 @@ inline TestRunner& TestRunner::testRunner()
         std::cout << "Assertion failed: " << #lhs << " == " << #rhs << "." << std::endl \
             << "    Expected equal but were unequal (" << (lhs) << ", " << (rhs) << ")" \
             << std::endl << "    At: " << __FILE_NAME << " " << __LINE_NUMBER << std::endl; \
-        TestRunner::testRunner().incrementFailedAssertions(); \
+        TestRunner::incrementFailedAssertions(); \
     } \
-    TestRunner::testRunner().incrementAssertionCount();
+    TestRunner::incrementAssertionCount();
 
 #ifdef assertNotEqual
     #undef assertNotEqual
@@ -165,9 +183,9 @@ inline TestRunner& TestRunner::testRunner()
         std::cout << "Assertion failed: " << #lhs << " != " << #rhs \
             << ". Expected not equal but were equal (" << (lhs) << ", " << (rhs) << ")" << std::endl; \
         std::cout << "    At: " << __FILE_NAME << " " << __LINE_NUMBER << std::endl; \
-        TestRunner::testRunner().incrementFailedAssertions(); \
+        TestRunner::incrementFailedAssertions(); \
     } \
-    TestRunner::testRunner().incrementAssertionCount();
+    TestRunner::incrementAssertionCount();
 
 #ifdef assertNotNull
     #undef assertNotNull
@@ -190,9 +208,9 @@ inline TestRunner& TestRunner::testRunner()
         std::cout << "Assertion failed: " << #lhs << " > " #rhs \
             << ". Expected greater than but was not (" << (lhs) << ", " << (rhs) << ")" << std::endl; \
         std::cout << "    At: " << __FILE_NAME << " " << __LINE_NUMBER << std::endl; \
-        TestRunner::testRunner().incrementFailedAssertions(); \
+        TestRunner::incrementFailedAssertions(); \
     } \
-    TestRunner::testRunner().incrementAssertionCount();
+    TestRunner::incrementAssertionCount();
 
 #ifdef assertLessThan
     #undef assertLessThan
@@ -203,9 +221,9 @@ inline TestRunner& TestRunner::testRunner()
         std::cout << "Assertion failed: " << #lhs << " < " #rhs \
             << ". Expected less than but was not (" << (lhs) << ", " << (rhs) << ")" << std::endl; \
         std::cout << "    At: " << __FILE_NAME << " " << __LINE_NUMBER << std::endl; \
-        TestRunner::testRunner().incrementFailedAssertions(); \
+        TestRunner::incrementFailedAssertions(); \
     } \
-    TestRunner::testRunner().incrementAssertionCount();
+    TestRunner::incrementAssertionCount();
 
 #ifdef assertGreaterThanOrEqual
     #undef assertGreaterThanOrEqual
@@ -216,9 +234,9 @@ inline TestRunner& TestRunner::testRunner()
         std::cout << "Assertion failed: " << #lhs << " >= " #rhs \
             << ". Expected greater or equal than but was not (" << (lhs) << ", " << (rhs) << ")" << std::endl; \
         std::cout << "    At: " << __FILE_NAME << " " << __LINE_NUMBER << std::endl; \
-        TestRunner::testRunner().incrementFailedAssertions(); \
+        TestRunner::incrementFailedAssertions(); \
     } \
-    TestRunner::testRunner().incrementAssertionCount();
+    TestRunner::incrementAssertionCount();
 
 #ifdef assertLessThanOrEqual
     #undef assertLessThanOrEqual
@@ -229,9 +247,9 @@ inline TestRunner& TestRunner::testRunner()
         std::cout << "Assertion failed: " << #lhs << " <= " #rhs \
             << ". Expected less than or equal but was not (" << (lhs) << ", " << (rhs) << ")" << std::endl; \
         std::cout << "    At: " << __FILE_NAME << " " << __LINE_NUMBER << std::endl; \
-        TestRunner::testRunner().incrementFailedAssertions(); \
+        TestRunner::incrementFailedAssertions(); \
     } \
-    TestRunner::testRunner().incrementAssertionCount();
+    TestRunner::incrementAssertionCount();
 
 #ifdef __LINE_NUMBER
     #undef __LINE_NUMBER
